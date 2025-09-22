@@ -1,0 +1,86 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Dirección I2C del módulo LCD
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Pines para los 3 sensores IR (montados a diferentes alturas)
+const int sensorAlto = A0;    // Sensor más alto (para 1L)
+const int sensorMedio = A1;   // Sensor medio (para 0.5L)  
+const int sensorBajo = A2;    // Sensor más bajo (para 0.25L)
+
+// Umbral para determinar si un sensor está activado (¡AJUSTAR!)
+const int UMBRAL_DETECCION = 500;
+
+void setup() {
+  Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
+  
+  lcd.setCursor(0,0);
+  lcd.print("Sistema Listo   ");
+  lcd.setCursor(0,1);
+  lcd.print("Calibrando...   ");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  // Leer los tres sensores
+  int valorAlto = analogRead(sensorAlto);
+  int valorMedio = analogRead(sensorMedio);
+  int valorBajo = analogRead(sensorBajo);
+  
+  // Convertir a detección binaria (true/false)
+  bool detectaAlto = (valorAlto > UMBRAL_DETECCION);
+  bool detectaMedio = (valorMedio > UMBRAL_DETECCION);
+  bool detectaBajo = (valorBajo > UMBRAL_DETECCION);
+  
+  // Determinar el tipo de recipiente según el patrón binario
+  String tipoRecipiente = "No detectado  ";
+  int volumen = 0;
+  
+  // Lógica de patrones binarios
+  if (detectaBajo && !detectaMedio && !detectaAlto) {
+    // Solo el sensor bajo detecta -> Recipiente bajo (0.25L)
+    tipoRecipiente = "Recipiente 0.25L";
+    volumen = 250;
+  } 
+  else if (detectaBajo && detectaMedio && !detectaAlto) {
+    // Solo los sensores bajo y medio detectan -> Recipiente medio (0.5L)
+    tipoRecipiente = "Recipiente 0.5L ";
+    volumen = 500;
+  } 
+  else if (detectaBajo && detectaMedio && detectaAlto) {
+    // Los tres sensores detectan -> Recipiente alto (1L)
+    tipoRecipiente = "Recipiente 1L   ";
+    volumen = 1000;
+  }
+  else {
+    // Cualquier otro patrón se considera error o no detectado
+    tipoRecipiente = "Error/No detect";
+    volumen = 0;
+  }
+  
+  // Mostrar en LCD
+  lcd.setCursor(0,0);
+  lcd.print("Estado:          ");
+  lcd.setCursor(0,1);
+  lcd.print(tipoRecipiente);
+  
+  // Mostrar valores por serial para calibrar y debuggear
+  Serial.print("Patrón: ");
+  Serial.print(detectaAlto);
+  Serial.print(detectaMedio);
+  Serial.print(detectaBajo);
+  Serial.print(" | Valores: ");
+  Serial.print(valorAlto);
+  Serial.print(", ");
+  Serial.print(valorMedio);
+  Serial.print(", ");
+  Serial.print(valorBajo);
+  Serial.print(" | Volumen: ");
+  Serial.println(volumen);
+  
+  delay(300);
+}
