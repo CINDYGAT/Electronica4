@@ -32,9 +32,9 @@ void loop() {
   int valorBajo = analogRead(sensorBajo);
   
   // Convertir a detección binaria (true/false)
-  bool detectaAlto = (valorAlto > UMBRAL_DETECCION);
-  bool detectaMedio = (valorMedio > UMBRAL_DETECCION);
-  bool detectaBajo = (valorBajo > UMBRAL_DETECCION);
+  bool detectaAlto = (valorAlto < UMBRAL_DETECCION);
+  bool detectaMedio = (valorMedio < UMBRAL_DETECCION);
+  bool detectaBajo = (valorBajo < UMBRAL_DETECCION);
   
   // Determinar el tipo de recipiente según el patrón binario
   String tipoRecipiente = "No detectado  ";
@@ -43,22 +43,22 @@ void loop() {
   // Lógica de patrones binarios
   if (detectaBajo && !detectaMedio && !detectaAlto) {
     // Solo el sensor bajo detecta -> Recipiente bajo (0.25L)
-    tipoRecipiente = "Recipiente 0.25L";
+    tipoRecipiente = "Recipiente pequeno";
     volumen = 250;
   } 
   else if (detectaBajo && detectaMedio && !detectaAlto) {
     // Solo los sensores bajo y medio detectan -> Recipiente medio (0.5L)
-    tipoRecipiente = "Recipiente 0.5L ";
+    tipoRecipiente = "Recipiente Medio ";
     volumen = 500;
   } 
   else if (detectaBajo && detectaMedio && detectaAlto) {
     // Los tres sensores detectan -> Recipiente alto (1L)
-    tipoRecipiente = "Recipiente 1L   ";
+    tipoRecipiente = "Recipiente Grande   ";
     volumen = 1000;
   }
   else {
     // Cualquier otro patrón se considera error o no detectado
-    tipoRecipiente = "Error/No detect";
+    tipoRecipiente = "No recipiente";
     volumen = 0;
   }
   
