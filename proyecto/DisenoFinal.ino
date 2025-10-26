@@ -193,15 +193,15 @@ void detectarRecipiente() {
 
   if (detectaBajo && !detectaMedio && !detectaAlto) {
     recipienteSeleccionado = 250;
-    tiempoRetardoRecipiente = 300; // 0.3 s para motor
-    duracionApagado = 4000;         // 0.3 s para foco (CORREGIDO)
+    tiempoRetardoRecipiente = 500; // 0.5 s para motor ---valor correcto
+    duracionApagado = 3000;         // 0.3 s para foco (CORREGIDO)
     recipienteDetectado = true;
     Serial.println("Recipiente PEQUEÑO detectado (250 ml)");
     mostrarLCD("Recipiente", "PEQUEÑO 250ml");
   } 
   else if (detectaBajo && detectaMedio && !detectaAlto) {
     recipienteSeleccionado = 500;
-    tiempoRetardoRecipiente = 800; // 0.8 s para motor (CORREGIDO)
+    tiempoRetardoRecipiente = 1200; // 0.8 s para motor (CORREGIDO)
     duracionApagado = 5000;         // 4 s para foco (CORREGIDO)
     recipienteDetectado = true;
     Serial.println("Recipiente MEDIANO detectado (500 ml)");
@@ -209,7 +209,7 @@ void detectarRecipiente() {
   } 
   else if (detectaBajo && detectaMedio && detectaAlto) {
     recipienteSeleccionado = 1000;
-    tiempoRetardoRecipiente = 1500; // 1.5 s para motor
+    tiempoRetardoRecipiente = 1900; // 1.9 s para motor
     duracionApagado = 6000;         // 1.5 s para foco (CORREGIDO)
     recipienteDetectado = true;
     Serial.println("Recipiente GRANDE detectado (1000 ml)");
@@ -230,7 +230,7 @@ void controlarFoco() {
     recipienteDetectado = false; // solo ejecutar una vez por detección
 
     Serial.println("Foco: Esperando 1 segundo antes de apagarse...");
-    delay(9000); // espera 5 segundo antes de apagar (CORREGIDO)
+    delay(9400); // espera 9 segundo antes de apagar (CORREGIDO)
 
     Serial.print("Apagando foco por ");
     Serial.print(duracionApagado);
@@ -282,7 +282,7 @@ void loop() {
 
       switch (recipienteSeleccionado) {
         case 250: 
-          Serial.println("Iniciando llenado PEQUEÑO..."); 
+          Serial.println("Iniciando llenado PEQUENO..."); 
           break;
         case 500: 
           Serial.println("Iniciando llenado MEDIANO..."); 
